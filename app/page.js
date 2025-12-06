@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 // --- CONFIGURATION ---
-const apiKey = "AIzaSyDhLy27OuJXfuDPfZOwaVJVpzA10_vYtDI" // If you want to use models other than gemini-2.5-flash-preview-09-2025 or imagen-4.0-generate-001, provide an API key here. Otherwise, leave this as-is.
+// API key is now handled server-side in app/api/generate-quiz/route.js
 
 // --- DEMO PROMPTS DATA ---
 const demoPrompts = [
@@ -562,59 +562,20 @@ export default function App() {
 
     try {
       // Dynamically request the number of questions based on config
-      const prompt = `
-        Generate ${config.questionCount} multiple choice questions about the topic: "${topic}".
-        
-        Strictly follow this JSON format for the response. Do not include markdown formatting, backticks, or any text outside the JSON array:
-        [
-          {
-            "id": 1,
-            "question": "Question text here",
-            "options": ["Option A", "Option B", "Option C", "Option D"],
-            "answer": "The exact string of the correct option"
-          }
-        ]
-        Ensure the "answer" matches one of the "options" exactly.
-      `;
+      const response = await fetch('/api/generate-quiz', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ topic, config }),
+      });
 
-      // Use exponential backoff for API call
-      let response;
-      const MAX_RETRIES = 3;
-      for (let i = 0; i < MAX_RETRIES; i++) {
-        response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-            }),
-          }
-        );
-
-        if (response.ok) break;
-
-        // Implement exponential backoff
-        if (i < MAX_RETRIES - 1) {
-          const delay = Math.pow(2, i) * 1000;
-          await new Promise(resolve => setTimeout(resolve, delay));
-        } else {
-          throw new Error('Failed to fetch from AI service after multiple retries.');
-        }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate quiz');
       }
 
-      const data = await response.json();
-      let textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-      // Clean up markdown fences if the model included them
-      textResponse = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-
-      const parsedQuestions = JSON.parse(textResponse);
-
-      // Ensure we respect the count if the AI generated slightly different amount
-      const limitedQuestions = parsedQuestions.slice(0, config.questionCount);
+      const limitedQuestions = await response.json();
 
       setQuestions(limitedQuestions);
       setGameState('quiz');
