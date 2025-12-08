@@ -6,7 +6,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 // --- DEMO PROMPTS DATA ---
 const demoPrompts = [
-  "Prepare a simple grammar/maths test for kids.",
+  "Simple grammar/maths test for kids.",
   "I am a computer science student learning web dev. Ask me questions related to web technologies.",
   "I am preparing for NEET/UPSC/JEE, ask me questions based on it's syllabus and previous year question papers.",
   "I am a student of economics and my syllabus is bank, finance etc. Prepare a test for me."
@@ -44,13 +44,15 @@ const formatTime = (seconds) => {
 // =======================================================================
 
 const HomeView = ({ setGameState }) => (
+
   <div className="flex flex-col items-center text-center space-y-8 py-10">
+
     <div className="w-24 h-24 bg-violet-100 rounded-3xl flex items-center justify-center mb-4 shadow-xl shadow-violet-100">
       <i className="fa-solid fa-layer-group text-5xl text-violet-700"></i>
     </div>
 
     {/* Title size adjusted for mobile: text-5xl on small screens */}
-    <h1 className="text-5xl sm:text-7xl font-extrabold text-gray-900 tracking-tight">
+    <h1 id='title' className="text-5xl sm:text-7xl font-extrabold text-gray-900 tracking-tight">
       Test<span className="text-violet-700">Tile</span>
     </h1>
 
@@ -84,12 +86,9 @@ const AboutView = ({ setGameState }) => (
     <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">About TestTile</h2>
     <div className="bg-white p-8 rounded-3xl shadow-2xl shadow-gray-200 border-gray-100 text-left space-y-4">
       <p className="text-lg text-gray-700 leading-relaxed">
-        TestTile is an experimental learning platform that uses the Google Gemini API to generate
-        educational content, providing multiple-choice questions on any topic you provide.
+        A educational platform that uses Google Gemini to generate MCQ on a given topic. Designed as a fun learning app with features like negative marking and time limit for more challenging and high level test experience.
       </p>
-      <p className="text-lg text-gray-700 leading-relaxed">
-        The application is built using React and styled following the principles of Material Design 3 (M3) with a Lavender theme.
-      </p>
+
     </div>
     <button
       onClick={() => setGameState('home')}
@@ -449,7 +448,7 @@ export default function App() {
   const [config, setConfig] = useState({
     timerEnabled: false,
     timePerQuestion: 15, // default seconds
-    questionCount: 15,
+    questionCount: 10,
     negativeMarking: false,
     scoreCorrect: 4, // standard competitive exam score
     scoreWrong: 1    // standard deduction
