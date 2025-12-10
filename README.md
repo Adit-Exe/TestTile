@@ -1,4 +1,4 @@
-# TestTile Quiz Generator
+# TestTile
 [TestTile](https://testtile.vercel.app/) is an interactive, single-page application (SPA) that leverages the **Google Gemini API** to instantly generate customized multiple-choice quizzes on any topic provided by the user. It features dynamic configuration options, including timed tests and customizable scoring rules.
 
 ### Features
